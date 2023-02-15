@@ -1,10 +1,23 @@
 name: deploy and test
 
-on: [workflow_dispatch]
+on: 
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'What do you want to do ?'
+        required: true
+        default: 'deployment'
+        type: choice
+        options:
+          - deployment
+          - test add
+          - test sub
+
 
 jobs:
   test_add:
     runs-on: ubuntu-latest
+    if: inputs.action == 'test add' || inputs.action == 'deployment'
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -19,6 +32,7 @@ jobs:
 
   test_sub:
     runs-on: ubuntu-latest
+    if: inputs.action == 'test sub' || inputs.action == 'deployment'
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -33,6 +47,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    if: inputs.action == 'deployment'
     needs: [test_add, test_sub]
     steps:
       - name: deploy
